@@ -24,20 +24,20 @@ import {
   FieldGroup,
   FieldSeparator,
 } from "@/components/ui/field";
-import { loginSchema, type LoginInput } from "../schemas/login";
+import { signupSchema, type SignupInput } from "../schemas/signup";
 
-export const LoginForm = () => {
+export const SignupForm = () => {
   const router = useRouter();
 
-  const form = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<SignupInput>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = async (values: LoginInput) => {
+  const onSubmit = async (values: SignupInput) => {
     console.log(values);
   };
 
@@ -49,8 +49,8 @@ export const LoginForm = () => {
     <div className="flex flex-col gap-6">
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>Login to your account to continue</CardDescription>
+          <CardTitle className="text-xl">Create an account</CardTitle>
+          <CardDescription>Sign up to get started</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -125,12 +125,12 @@ export const LoginForm = () => {
               {/* Submit Section */}
               <div className="flex flex-col gap-4 mt-2">
                 <Button type="submit" disabled={isSubmitting}>
-                  Login
+                  Sign up
                 </Button>
                 <div className="text-center text-sm text-muted-foreground">
-                  Don&apos;t have an account?{" "}
-                  <Link href="/signup" className="underline underline-offset-4">
-                    Sign up
+                  Already have an account?{" "}
+                  <Link href="/login" className="underline underline-offset-4">
+                    Log in
                   </Link>
                 </div>
               </div>
