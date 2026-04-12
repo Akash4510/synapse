@@ -33,6 +33,7 @@ export const SignupForm = () => {
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -88,6 +89,29 @@ export const SignupForm = () => {
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with
               </FieldSeparator>
+
+              <Controller
+                name="name"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+
+                    <Input
+                      {...field} // This injects onChange, onBlur, value, and name
+                      id={field.name}
+                      type="text"
+                      placeholder="John Doe"
+                      aria-invalid={fieldState.invalid}
+                    />
+
+                    {/* This handles the Zod error message display */}
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
 
               <Controller
                 name="email"
@@ -161,8 +185,9 @@ export const SignupForm = () => {
               {/* Submit Section */}
               <div className="flex flex-col gap-4 mt-2">
                 <Button type="submit" disabled={isSubmitting}>
-                  Sign up
+                  {isSubmitting ? "Creating account..." : "Sign Up"}
                 </Button>
+
                 <div className="text-center text-sm text-muted-foreground">
                   Already have an account?{" "}
                   <Link href="/login" className="underline underline-offset-4">

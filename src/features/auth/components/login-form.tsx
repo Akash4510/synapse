@@ -143,8 +143,9 @@ export const LoginForm = () => {
               {/* Submit Section */}
               <div className="flex flex-col gap-4 mt-2">
                 <Button type="submit" disabled={isSubmitting}>
-                  Login
+                  {isSubmitting ? "Logging in..." : "Login"}
                 </Button>
+
                 <div className="text-center text-sm text-muted-foreground">
                   Don&apos;t have an account?{" "}
                   <Link href="/signup" className="underline underline-offset-4">
