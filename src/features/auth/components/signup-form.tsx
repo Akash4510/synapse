@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,12 +20,12 @@ import {
 import {
   Field,
   FieldLabel,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldSeparator,
 } from "@/components/ui/field";
 import { signupSchema, type SignupInput } from "../schemas/signup";
+import { authClient } from "@/lib/auth/client";
 
 export const SignupForm = () => {
   const router = useRouter();
@@ -34,11 +35,29 @@ export const SignupForm = () => {
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
   const onSubmit = async (values: SignupInput) => {
-    console.log(values);
+    await authClient.signUp.email(
+      {
+        name: values.email,
+        email: values.email,
+        password: values.password,
+        callbackURL: "/",
+      },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (ctx) => {
+          console.error("Signup error:", ctx.error);
+          console.error("Signup error:", ctx.error.message);
+          toast.error("Signup failed: " + ctx.error.message);
+        },
+      },
+    );
   };
 
   const {
@@ -46,11 +65,11 @@ export const SignupForm = () => {
   } = form;
 
   return (
-    <div className="flex flex-col gap-6">
-      <Card>
+    <div className="flex flex-col gap-6 w-full">
+      <Card className="w-full md:w-120 mx-auto">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Create an account</CardTitle>
-          <CardDescription>Sign up to get started</CardDescription>
+          <CardTitle className="text-xl">Get Started</CardTitle>
+          <CardDescription>Create your account to get started</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -76,6 +95,7 @@ export const SignupForm = () => {
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+
                     <Input
                       {...field} // This injects onChange, onBlur, value, and name
                       id={field.name}
@@ -83,6 +103,7 @@ export const SignupForm = () => {
                       placeholder="m@example.com"
                       aria-invalid={fieldState.invalid}
                     />
+
                     {/* This handles the Zod error message display */}
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -96,16 +117,31 @@ export const SignupForm = () => {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    {/* Label and Link on the same line */}
-                    <div className="flex items-center justify-between">
-                      <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                      <Link
-                        href="/forgot-password"
-                        className="text-sm font-medium text-muted-foreground hover:text-primary hover:underline underline-offset-4"
-                      >
-                        Forgot password?
-                      </Link>
-                    </div>
+                    <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+
+                    <Input
+                      {...field}
+                      id={field.name}
+                      type="password"
+                      aria-invalid={fieldState.invalid}
+                    />
+
+                    {/* Errors stay cleanly at the bottom */}
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="confirmPassword"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={field.name}>
+                      Confirm Password
+                    </FieldLabel>
 
                     <Input
                       {...field}
@@ -138,11 +174,6 @@ export const SignupForm = () => {
           </form>
         </CardContent>
       </Card>
-
-      <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <Link href="#">Privacy Policy</Link>.
-      </FieldDescription>
     </div>
   );
 };

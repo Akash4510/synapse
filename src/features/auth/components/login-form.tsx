@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,12 +20,12 @@ import {
 import {
   Field,
   FieldLabel,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldSeparator,
 } from "@/components/ui/field";
 import { loginSchema, type LoginInput } from "../schemas/login";
+import { authClient } from "@/lib/auth/client";
 
 export const LoginForm = () => {
   const router = useRouter();
@@ -38,7 +39,22 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (values: LoginInput) => {
-    console.log(values);
+    await authClient.signIn.email(
+      {
+        email: values.email,
+        password: values.password,
+        callbackURL: "/",
+      },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (ctx) => {
+          console.error("Login error:", ctx.error.message);
+          toast.error("Login failed: " + ctx.error.message);
+        },
+      },
+    );
   };
 
   const {
@@ -46,8 +62,8 @@ export const LoginForm = () => {
   } = form;
 
   return (
-    <div className="flex flex-col gap-6">
-      <Card>
+    <div className="flex flex-col gap-6 w-full">
+      <Card className="w-full md:w-120 mx-auto">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>Login to your account to continue</CardDescription>
@@ -76,6 +92,7 @@ export const LoginForm = () => {
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+
                     <Input
                       {...field} // This injects onChange, onBlur, value, and name
                       id={field.name}
@@ -83,6 +100,7 @@ export const LoginForm = () => {
                       placeholder="m@example.com"
                       aria-invalid={fieldState.invalid}
                     />
+
                     {/* This handles the Zod error message display */}
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -138,11 +156,6 @@ export const LoginForm = () => {
           </form>
         </CardContent>
       </Card>
-
-      <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <Link href="#">Privacy Policy</Link>.
-      </FieldDescription>
     </div>
   );
 };
