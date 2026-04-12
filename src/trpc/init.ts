@@ -1,11 +1,12 @@
 import { cache } from "react";
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
+import superjson from "superjson";
+
+// Import that cached getSession function to avoid multiple calls to getSession in the same request cycle. This is especially important for protected procedures that might be called multiple times in the same request.
+import { getSession } from "@/lib/auth/utils";
 
 export const createTRPCContext = cache(async () => {
-  /**
-   * @see: https://trpc.io/docs/server/context
-   */
-  return { userId: "user_123" };
+  return {};
 });
 
 // Avoid exporting the entire t-object
@@ -16,10 +17,22 @@ const t = initTRPC.create({
   /**
    * @see https://trpc.io/docs/server/data-transformers
    */
-  // transformer: superjson,
+  transformer: superjson,
 });
 
 // Base router and procedure helpers
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
+export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
+  const session = await getSession();
+
+  if (!session) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "You must be logged in to access this resource.",
+    });
+  }
+
+  return next({ ctx: { ...ctx, auth: session } });
+});

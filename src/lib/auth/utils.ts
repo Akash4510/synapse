@@ -16,7 +16,7 @@ import { auth } from ".";
  * - We can call `requireAuth()` inside Layouts, Pages, and deep nested Server Components
  * simultaneously. Even if called 50 times on one screen, the database is queried exactly once.
  */
-const getSession = cache(async () => {
+export const getSession = cache(async () => {
   return await auth.api.getSession({
     headers: await headers(),
   });
