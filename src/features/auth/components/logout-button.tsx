@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/client";
 
-export const SignoutButton = ({ ...props }) => {
+export const LogoutButton = ({ ...props }) => {
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
 
@@ -29,7 +29,7 @@ export const SignoutButton = ({ ...props }) => {
 
   return (
     <Button {...props} onClick={handleSignOut} disabled={isPending}>
-      {isPending ? "Signing out..." : "Sign out"}
+      {isPending ? "Logging out..." : "Logout"}
     </Button>
   );
 };
