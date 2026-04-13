@@ -75,9 +75,24 @@ export const LoginForm = () => {
               {/* OAuth Section (Uncontrolled, just standard buttons) */}
               <div className="flex flex-col gap-2">
                 <Button variant="outline" type="button" disabled={isSubmitting}>
+                  <Image
+                    src="/logos/github.svg"
+                    alt="GitHub Logo"
+                    width={18}
+                    height={18}
+                    className="mr-1"
+                  />
                   Continue with Github
                 </Button>
+
                 <Button variant="outline" type="button" disabled={isSubmitting}>
+                  <Image
+                    src="/logos/google.svg"
+                    alt="Google Logo"
+                    width={18}
+                    height={18}
+                    className="mr-1"
+                  />
                   Continue with Google
                 </Button>
               </div>
