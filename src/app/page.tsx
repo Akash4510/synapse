@@ -1,7 +1,7 @@
 import React from "react";
 
 import { requireAuth } from "@/lib/auth/utils";
-import { SignoutButton } from "@/features/auth/components/signout-button";
+import { LogoutButton } from "@/features/auth/components/logout-button";
 
 const HomePage = async () => {
   const { user } = await requireAuth();
@@ -9,7 +9,7 @@ const HomePage = async () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-4">
       <p>{JSON.stringify(user)}</p>
-      <SignoutButton />
+      <LogoutButton />
     </div>
   );
 };
